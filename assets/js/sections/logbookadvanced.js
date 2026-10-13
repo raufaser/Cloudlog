@@ -609,6 +609,18 @@ $(document).ready(function () {
 		handleQslReceived('Y','E', 'receivedElectronic');
 	});
 
+	$('#requestedBureau').click(function (event) {
+		handleQslRequestedMethod('B', 'requestedBureau');
+	});
+
+	$('#requestedDirect').click(function (event) {
+		handleQslRequestedMethod('D', 'requestedDirect');
+	});
+
+	$('#requestedElectronic').click(function (event) {
+		handleQslRequestedMethod('E', 'requestedElectronic');
+	});
+
 	$('#changeStationLocation').click(function (event) {
 		var elements = $('#qsoList tbody input:checked');
 		var nElements = elements.length;
@@ -1112,6 +1124,36 @@ $(document).ready(function () {
 			type: 'post',
 			data: {'id': JSON.stringify(id_list, null, 2),
 				'sent' : sent,
+				'method' : method
+			},
+			success: function(data) {
+				if (data !== []) {
+					$.each(data, function(k, v) {
+						updateRow(this);
+						unselectQsoID(this.qsoID);
+					});
+				}
+				$('#'+tag).prop("disabled", false);
+			}
+		});
+	}
+
+	function handleQslRequestedMethod(method, tag) {
+		var elements = $('#qsoList tbody input:checked');
+		var nElements = elements.length;
+		if (nElements == 0) {
+			return;
+		}
+		$('#'+tag).prop("disabled", true);
+		var id_list=[];
+		elements.each(function() {
+			let id = $(this).first().closest('tr').data('qsoID')
+			id_list.push(id);
+		});
+		$.ajax({
+			url: base_url + 'index.php/logbookadvanced/update_qsl_requested_method',
+			type: 'post',
+			data: {'id': JSON.stringify(id_list, null, 2),
 				'method' : method
 			},
 			success: function(data) {

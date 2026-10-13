@@ -244,6 +244,33 @@ class Logbookadvanced extends CI_Controller {
 		print json_encode($q);
 	}
 
+	function update_qsl_requested_method() {
+		$this->load->model('logbookadvanced_model');
+
+		$ids = xss_clean($this->input->post('id'));
+		$user_id = (int)$this->session->userdata('user_id');
+		$method = xss_clean($this->input->post('method'));
+
+		$status = $this->logbookadvanced_model->updateQslRequestedMethod($ids, $user_id, $method);
+
+		$data = $this->logbookadvanced_model->getQsosForAdif($ids, $user_id);
+
+		$results = $data->result('array');
+
+		$qsos = [];
+		foreach ($results as $data) {
+			$qsos[] = new QSO($data);
+		}
+
+		$q = [];
+		foreach ($qsos as $qso) {
+			$q[] = $qso->toArray();
+		}
+
+		header("Content-Type: application/json");
+		print json_encode($q);
+	}
+
 	function update_station_location() {
 		$this->load->model('logbookadvanced_model');
 

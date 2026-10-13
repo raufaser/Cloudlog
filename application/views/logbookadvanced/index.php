@@ -263,6 +263,7 @@ $options = $options_obj;
                 <label for="qslReceivedMethod"><?php echo lang('filter_qsl_recv_method'); ?></label>
                 <select id="qslReceivedMethod" name="qslReceivedMethod" class="form-select form-select-sm">
                     <option value=""><?php echo lang('general_word_all'); ?></option>
+                    <option value="none"><?php echo lang('general_word_none'); ?></option>
                     <option value="B"><?php echo lang('general_word_qslcard_bureau'); ?></option>
                     <option value="D"><?php echo lang('general_word_qslcard_direct'); ?></option>
                     <option value="E"><?php echo lang('general_word_qslcard_electronic'); ?></option>
@@ -348,6 +349,9 @@ $options = $options_obj;
             <button type="button" class="btn btn-sm btn-warning me-1" id="receivedBureau"><?php echo lang('filter_actions_recv_bureau'); ?></button>
             <button type="button" class="btn btn-sm btn-warning me-1" id="receivedDirect"><?php echo lang('filter_actions_recv_direct'); ?></button>
             <button type="button" class="btn btn-sm btn-warning me-1" id="receivedElectronic"><?php echo lang('filter_actions_recv_electronic'); ?></button>
+            <button type="button" class="btn btn-sm btn-outline-warning me-1" id="requestedBureau"><?php echo lang('general_word_requested') . ' (' . lang('general_word_qslcard_bureau') . ')'; ?></button>
+            <button type="button" class="btn btn-sm btn-outline-warning me-1" id="requestedDirect"><?php echo lang('general_word_requested') . ' (' . lang('general_word_qslcard_direct') . ')'; ?></button>
+            <button type="button" class="btn btn-sm btn-outline-warning me-1" id="requestedElectronic"><?php echo lang('general_word_requested') . ' (' . lang('general_word_qslcard_electronic') . ')'; ?></button>
             <button type="button" class="btn btn-sm btn-info me-1" id="exportAdif"><?php echo lang('filter_actions_create_adif'); ?></button>
             <button type="button" class="btn btn-sm btn-info me-1" id="printLabel"><?php echo lang('filter_actions_print_label'); ?></button>
             <button type="button" class="btn btn-sm btn-info me-1" id="qslSlideshow"><?php echo lang('filter_actions_qsl_slideshow'); ?></button>

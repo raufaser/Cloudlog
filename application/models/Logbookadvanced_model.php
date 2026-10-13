@@ -85,9 +85,15 @@ class Logbookadvanced_model extends CI_Model {
 		}
 
 		if ($searchCriteria['qslReceivedMethod'] !== '') {
-			$condition = "COL_QSL_RCVD_VIA = ?";
-			$conditions[] = $condition;
-			$binding[] = $searchCriteria['qslReceivedMethod'];
+			if ($searchCriteria['qslReceivedMethod'] === 'none') {
+				// A method of "none" means "no method recorded yet". The column
+				// defaults to NULL, but the QSO edit form writes an empty string,
+				// so both have to match.
+				$conditions[] = "(COL_QSL_RCVD_VIA IS NULL OR COL_QSL_RCVD_VIA = '')";
+			} else {
+				$conditions[] = "COL_QSL_RCVD_VIA = ?";
+				$binding[] = $searchCriteria['qslReceivedMethod'];
+			}
 		}
 
 		if ($searchCriteria['lotwSent'] !== '') {
@@ -419,6 +425,32 @@ class Logbookadvanced_model extends CI_Model {
 			$data = array(
 				'station_id' => $station_id
 			);
+			$this->scopeQsosToUser($user_id);
+			$this->db->where_in('COL_PRIMARY_KEY', json_decode($ids, true));
+			$this->db->update($this->config->item('table_name'), $data);
+
+			return array('message' => 'OK');
+		}
+	}
+
+	public function updateQslRequestedMethod($ids, $user_id, $method) {
+		$this->load->model('user_model');
+
+		if(!$this->user_model->authorize(2)) {
+			return array('message' => 'Error');
+		} else {
+			// Only accept the methods ADIF defines for QSL_RCVD_VIA, so a crafted
+			// request cannot write an arbitrary value into the column.
+			if (!in_array($method, array('B', 'D', 'E', 'M'), true)) {
+				return array('message' => 'Invalid method');
+			}
+
+			$data = array(
+				'COL_QSL_RCVD_VIA' => $method
+			);
+
+			// authorize(2) only proves the request comes from a logged-in user, so
+			// scope the update to the station profiles that user owns.
 			$this->scopeQsosToUser($user_id);
 			$this->db->where_in('COL_PRIMARY_KEY', json_decode($ids, true));
 			$this->db->update($this->config->item('table_name'), $data);
