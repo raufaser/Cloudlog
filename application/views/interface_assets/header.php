@@ -112,6 +112,8 @@
 							<a class="dropdown-item" href="<?php echo site_url('logbook'); ?>"><i class="fas fa-atlas"></i> <?php echo lang('menu_overview'); ?></a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="<?php echo site_url('logbookadvanced'); ?>"><i class="fas fa-book-open"></i> <?php echo lang('menu_advanced'); ?></a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="<?php echo site_url('qslreceive'); ?>" title="Receive QSL Cards"><i class="fas fa-inbox"></i> <?php echo lang('menu_view_qsl'); ?> &middot; <?php echo lang('general_word_received'); ?></a>
 							<?php if ($show_qsl_cards_menu) { ?>
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item" href="<?php echo site_url('qsl'); ?>" title="QSL"><i class="fas fa-envelope"></i> <?php echo lang('menu_view_qsl'); ?></a>

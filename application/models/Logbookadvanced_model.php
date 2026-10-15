@@ -404,6 +404,51 @@ class Logbookadvanced_model extends CI_Model {
         }
     }
 
+	// Undo for the QSL card receive panel: restores the exact state each row had
+	// before the last action, received side and sent side. One step, no stack.
+	// Values are whitelisted and dates regex-checked, so a crafted payload cannot
+	// write an arbitrary value into the columns. Anything unknown is blanked.
+	public function revertQsl($ids, $user_id, $values) {
+        $this->load->model('user_model');
+
+        if(!$this->user_model->authorize(2)) {
+            return array('message' => 'Error');
+        }
+
+        $previous = json_decode($values, true);
+        if (!is_array($previous)) {
+            return array('message' => 'Invalid values');
+        }
+
+        foreach (json_decode($ids, true) ?? [] as $id) {
+            $row = $previous[$id] ?? null;
+            if ($row === null) {
+                continue;
+            }
+            $data = array(
+                'COL_QSL_RCVD' => $this->cleanQslValue($row['rcvd'] ?? '', array('', 'Y', 'N', 'I', 'R', 'V')),
+                'COL_QSL_RCVD_VIA' => $this->cleanQslValue($row['rcvdVia'] ?? '', array('', 'B', 'D', 'E', 'M')),
+                'COL_QSLRDATE' => $this->cleanQslDate($row['rcvdDate'] ?? null),
+                'COL_QSL_SENT' => $this->cleanQslValue($row['sent'] ?? '', array('', 'Y', 'N', 'I', 'R', 'Q')),
+                'COL_QSL_SENT_VIA' => $this->cleanQslValue($row['sentVia'] ?? '', array('', 'B', 'D', 'E', 'M')),
+                'COL_QSLSDATE' => $this->cleanQslDate($row['sentDate'] ?? null),
+            );
+            $this->scopeQsosToUser($user_id);
+            $this->db->where('COL_PRIMARY_KEY', $id);
+            $this->db->update($this->config->item('table_name'), $data);
+        }
+
+        return array('message' => 'OK');
+    }
+
+	private function cleanQslValue($value, array $allowed) {
+		return in_array($value, $allowed, true) ? $value : '';
+	}
+
+	private function cleanQslDate($date) {
+		return preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', (string) $date) ? $date : null;
+	}
+
 	public function updateStationLocation($ids, $user_id, $station_id) {
 		$this->load->model('user_model');
 
