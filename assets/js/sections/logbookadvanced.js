@@ -455,6 +455,16 @@ $(document).ready(function () {
 		return false;
 	});
 
+	// Live filtering: re-run the search as the callsign is typed, so a stack of
+	// QSL cards can be found without pressing Enter for every partial callsign.
+	var dxSearchTimer = null;
+	$('#dx').on('input', function () {
+		clearTimeout(dxSearchTimer);
+		dxSearchTimer = setTimeout(function () {
+			$('#searchForm').submit();
+		}, 200);
+	});
+
 	$('#qsoList').on('click', 'input[type="checkbox"]', function() {
 		if ($(this).is(":checked")) {
 			$(this).closest('tr').addClass('activeRow');
